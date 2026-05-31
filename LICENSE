@@ -1,0 +1,27 @@
+ALMEER BOT — PROPRIETARY LICENSE
+Copyright © 2026 ALMEER / SIDER44 (github.com/SIDER44). All rights reserved.
+
+This software and its source code are the exclusive property of ALMEER / SIDER44.
+
+PERMITTED:
+  • You may run this bot for personal, non-commercial use only.
+  • You may modify configuration files (.env) for your own deployment.
+
+STRICTLY PROHIBITED — WITHOUT PRIOR WRITTEN PERMISSION:
+  • Redistributing, reselling, or publicly sharing this source code.
+  • Removing, replacing, or obscuring any ALMEER branding, credits,
+    copyright notices, or attribution in any file or bot output.
+  • Rebranding this bot under any other name or identity.
+  • Using this code as a base for derivative bots that are distributed
+    to others, commercially or freely.
+  • Claiming authorship or ownership of this code.
+
+ENFORCEMENT:
+  This software contains technical brand-lock measures. Attempts to
+  circumvent these measures constitute a violation of this license.
+
+ATTRIBUTION REQUIREMENT:
+  Any permitted use must retain this LICENSE file and all in-code
+  copyright comments intact and unmodified.
+
+Contact: github.com/SIDER44

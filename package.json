@@ -1,0 +1,27 @@
+{
+  "name": "almeer-mini",
+  "version": "1.0.0",
+  "description": "ALMEER MINI - Cyberpunk WhatsApp bot powered by Baileys",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "node build-protected.js",
+    "build:install": "npm install javascript-obfuscator --save-dev && node build-protected.js"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "chalk": "^5.3.0",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "pino": "^9.4.0",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.2.2"
+  }
+}

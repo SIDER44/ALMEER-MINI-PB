@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ALMEER MINI // PAIRING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cyan:#00ffe1;
+    --magenta:#ff2bd6;
+    --bg:#03000a;
+    --panel:rgba(10,0,25,.72);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--cyan);font-family:'Orbitron',sans-serif;overflow:hidden}
+  canvas#matrix{position:fixed;inset:0;z-index:0;opacity:.55}
+  .wrap{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;padding:24px}
+  .card{
+    width:min(440px,100%);
+    background:var(--panel);
+    border:1px solid var(--cyan);
+    border-radius:14px;
+    padding:28px;
+    box-shadow:0 0 24px var(--cyan),0 0 60px rgba(255,43,214,.35) inset;
+    backdrop-filter:blur(6px);
+  }
+  h1{
+    margin:0 0 4px;font-size:24px;font-weight:900;letter-spacing:3px;
+    color:var(--cyan);
+    text-shadow:0 0 8px var(--cyan),0 0 24px var(--magenta);
+  }
+  .sub{font-family:'Share Tech Mono',monospace;color:var(--magenta);font-size:12px;letter-spacing:2px;margin-bottom:22px}
+  label{display:block;font-size:11px;letter-spacing:2px;margin:14px 0 6px;color:var(--cyan);opacity:.85}
+  input{
+    width:100%;padding:12px 14px;background:#08001a;border:1px solid var(--magenta);
+    color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:16px;border-radius:8px;outline:none;
+    transition:.2s;
+  }
+  input:focus{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan)}
+  button{
+    margin-top:18px;width:100%;padding:13px;border:0;border-radius:8px;cursor:pointer;
+    background:linear-gradient(90deg,var(--cyan),var(--magenta));
+    color:#000;font-family:'Orbitron',sans-serif;font-weight:900;letter-spacing:3px;
+    box-shadow:0 0 18px var(--cyan);
+    transition:transform .15s;
+  }
+  button:hover{transform:translateY(-1px)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .code{
+    margin-top:22px;padding:18px;text-align:center;font-family:'Share Tech Mono',monospace;
+    font-size:32px;letter-spacing:8px;color:var(--magenta);
+    border:1px dashed var(--magenta);border-radius:10px;background:#08001a;
+    text-shadow:0 0 10px var(--magenta);
+    min-height:30px;
+  }
+  .msg{margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:12px;min-height:16px}
+  .ok{color:var(--cyan)} .err{color:#ff3b6f}
+  .foot{margin-top:18px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;color:#6affd1;opacity:.7;letter-spacing:2px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="wrap">
+
+  <div class="card" id="lock">
+    <h1>ALMEER MINI</h1>
+    <div class="sub">// SYSTEM LOCKED</div>
+    <label>ACCESS KEY</label>
+    <input id="pw" type="password" autocomplete="off" placeholder="••••••••" />
+    <button id="unlock">DECRYPT</button>
+    <div class="msg err" id="lockMsg"></div>
+    <div class="foot">v1.0 — built on baileys</div>
+  </div>
+
+  <div class="card hidden" id="pair">
+    <h1>ALMEER MINI</h1>
+    <div class="sub">// PAIRING TERMINAL</div>
+    <label>WHATSAPP NUMBER (no +)</label>
+    <input id="num" type="tel" placeholder="2348012345678" />
+    <button id="req">REQUEST CODE</button>
+    <div class="code" id="codeBox">— — — — — — — —</div>
+    <div class="msg" id="pairMsg"></div>
+    <div class="foot">WhatsApp → Linked Devices → Link with phone number</div>
+  </div>
+
+</div>
+
+<script>
+// matrix rain
+(() => {
+  const c = document.getElementById('matrix');
+  const ctx = c.getContext('2d');
+  let cols, drops;
+  const chars = 'アァカサタナハマヤラワ0123456789ABCDEFアミーレ'.split('');
+  function resize(){
+    c.width = innerWidth; c.height = innerHeight;
+    cols = Math.floor(c.width / 16);
+    drops = Array(cols).fill(1);
+  }
+  addEventListener('resize', resize); resize();
+  function draw(){
+    ctx.fillStyle = 'rgba(3,0,10,0.08)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle = '#00ffe1';
+    ctx.font = '15px monospace';
+    for (let i=0;i<drops.length;i++){
+      const t = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(t, i*16, drops[i]*16);
+      if (drops[i]*16 > c.height && Math.random() > .975) drops[i] = 0;
+      drops[i]++;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const $ = id => document.getElementById(id);
+
+$('unlock').onclick = async () => {
+  const password = $('pw').value.trim();
+  $('lockMsg').textContent = 'verifying...';
+  $('lockMsg').className = 'msg ok';
+  try{
+    const r = await fetch('/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});
+    const j = await r.json();
+    if (j.ok){
+      $('lock').classList.add('hidden');
+      $('pair').classList.remove('hidden');
+    } else {
+      $('lockMsg').textContent = 'ACCESS DENIED';
+      $('lockMsg').className = 'msg err';
+    }
+  }catch(e){
+    $('lockMsg').textContent = 'connection error';
+    $('lockMsg').className = 'msg err';
+  }
+};
+
+$('req').onclick = async () => {
+  const number = $('num').value.replace(/[^0-9]/g,'');
+  if (!number){ $('pairMsg').textContent='enter a number'; $('pairMsg').className='msg err'; return; }
+  $('req').disabled = true;
+  $('pairMsg').textContent='requesting code...';
+  $('pairMsg').className='msg ok';
+  $('codeBox').textContent='— — — — — — — —';
+  try{
+    const r = await fetch('/pair',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({number})});
+    const j = await r.json();
+    if (j.ok && j.code){
+      const c = j.code.replace(/(.{4})/,'$1-');
+      $('codeBox').textContent = c;
+      $('pairMsg').textContent='code generated — paste in WhatsApp within 60s';
+      $('pairMsg').className='msg ok';
+    } else {
+      $('pairMsg').textContent = j.error || 'failed';
+      $('pairMsg').className='msg err';
+    }
+  }catch(e){
+    $('pairMsg').textContent='request failed';
+    $('pairMsg').className='msg err';
+  } finally {
+    $('req').disabled = false;
+  }
+};
+</script>
+</body>
+</html>
